@@ -31,7 +31,7 @@ class Index extends \think\Controller {
 		if (!$file) {
 			$this->fail('file字段没有用文件提交');
 		}
-		$info = $file->validate(['size' => (float) $proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload');
+		$info = $file->validate(['size' => (float) $proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload/'.$this->token);
 		if ($info) {
 			$fileName = $proc['name'] . '/' . $info->getSaveName();
 			$type = explode(',', $proc['type']);
