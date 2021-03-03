@@ -14,13 +14,13 @@ return [
 	// 数据库类型
 	'type' => 'mysql',
 	// 服务器地址
-	'hostname' => 'rm-t4n09e14u6vu17533.mysql.singapore.rds.aliyuncs.com',
+	'hostname' => '10.0.0.170',
 	// 数据库名
 	'database' => 'aoss',
 	// 用户名
 	'username' => 'aoss',
 	// 密码
-	'password' => 'aossqwerty123',
+	'password' => 'aoss',
 	// 端口
 	'hostport' => '',
 	// 连接dsn
