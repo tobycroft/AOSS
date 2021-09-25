@@ -167,6 +167,7 @@ class Index extends \think\Controller
         echo json_encode([
             'code' => $code,
             'data' => $data,
+            'path' => $data,
         ], 320);
         exit(0);
     }
