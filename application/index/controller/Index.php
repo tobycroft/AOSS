@@ -70,14 +70,6 @@ class Index extends \think\Controller
             $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
             unlink($info->getPathname());
         }
-//        if ($proc["type"] == "remote" || $proc["type"] == "all") {
-//            $oss = new \OSS\AliyunOSS($proc);
-//            $oss->uploadFile($proc['bucket'], $fileName, $info->getPathname());
-//            if ($proc['main_type'] == 'remote') {
-//                $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
-//            }
-//            unlink($info->getPathname());
-//        }
         $file_info = [
             'token' => $token,
             'name' => $file->getInfo('name'),
