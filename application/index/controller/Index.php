@@ -4,6 +4,7 @@ namespace app\index\controller;
 
 use think\Request;
 use app\index\model\AttachmentModel;
+use app\index\model\ProjectModel;
 
 class Index extends \think\Controller
 {
@@ -27,7 +28,7 @@ class Index extends \think\Controller
     public function upload_file(Request $request, $full = 0, $ue = 0)
     {
         $token = $this->token;
-        $proc = \app\index\model\ProjectModel::api_find_token($token);
+        $proc = ProjectModel::api_find_token($token);
         if (!$proc) {
             $this->fail('项目不可用');
         }
@@ -138,11 +139,10 @@ class Index extends \think\Controller
         $file_name = md5(time() . microtime());
 
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $image, $result)) {
-            $proc = \app\index\model\ProjectModel::api_find_token($token);
+            $proc = ProjectModel::api_find_token($token);
             if (!$proc) {
                 $this->fail('项目不可用');
             }
-            $oss = new \OSS\AliyunOSS($proc);
             $ext = explode(',', $proc['ext']);
             $type = $result[2];
             if (!in_array($type, $ext)) {
@@ -162,21 +162,41 @@ class Index extends \think\Controller
                     'data' => '图片保存失败'
                 ];
             }
-            $fileName = $proc['name'] . '/' . $savePath . $file_name . "." . $type;
-            $type = explode(',', $proc['type']);
-            if (in_array('oss', $type)) {
-                $oss->uploadFile($proc['bucket'], $fileName, $file_path);
-                if ($proc['main_type'] == 'oss') {
-                    $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
-                }
+            $md5 = md5_file($file_path);
+
+            if ($file_exists = AttachmentModel::get(['md5' => $md5])) {
+                $sav = ($full ? $proc['url'] . '/' : '') . $file_exists['path'];
+                // 附件已存在
+                return $this->succ($sav);
             }
-            if (!in_array('local', $type)) {
-                unlink($file_path);
-            } else {
+
+            $fileName = $proc['name'] . '/' . $savePath . $file_name . "." . $type;
+
+            if ($proc["type"] == "local" || $proc["type"] == "all") {
                 if ($proc['main_type'] == 'local') {
                     $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
                 }
             }
+            if ($proc["type"] == "oss" || $proc["type"] == "all") {
+                $oss = new \OSS\AliyunOSS($proc);
+                $oss->uploadFile($proc['bucket'], $fileName, $file_path);
+                if ($proc['main_type'] == 'oss') {
+                    $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
+                }
+                unlink($file_path);
+            }
+
+            $file_info = [
+                'token' => $token,
+                'name' => $file_name,
+                'mime' => $type,
+                'path' => $fileName,
+                'ext' => $ext,
+                'size' => $file_size,
+                'md5' => $md5,
+            ];
+            AttachmentModel::create($file_info);
+
             if ($ue) {
                 $this->succ(['src' => $sav]);
             } else {
