@@ -56,19 +56,18 @@ class Index extends \think\Controller
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
             }
         }
+        if ($proc["type"] == "remote" || $proc["type"] == "all") {
+            $sf = new SendFile();
+            $ret = $sf->send('http://' . $proc["endpoint"] . '/up?token=' . $proc["bucket"], $file->getPathname(), $file->getInfo('type'), $file->getInfo('name'));
+            $json = json_decode($ret, 1);
+            $fileName = ($full ? $proc['url'] . '/' : '') . $json["data"];
+        }
         if ($proc["type"] == "oss" || $proc["type"] == "all") {
             $oss = new \OSS\AliyunOSS($proc);
             $oss->uploadFile($proc['bucket'], $fileName, $info->getPathname());
             if ($proc['main_type'] == 'oss') {
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
             }
-            unlink($info->getPathname());
-        }
-        if ($proc["type"] == "remote" || $proc["type"] == "all") {
-            $sf = new SendFile();
-            $ret = $sf->send('http://' . $proc["endpoint"] . '/up?token=' . $proc["bucket"], $file->getPathname(), $file->getInfo('type'), $file->getInfo('name'));
-            $json = json_decode($ret, 1);
-            $fileName = ($full ? $proc['url'] . '/' : '') . $json["data"];
             unlink($info->getPathname());
         }
         $file_info = [
