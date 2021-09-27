@@ -10,7 +10,7 @@ class SendFile
             'file' => new \CURLFile($real_path, '', $file_name)
         ];
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, upload_url);
+        curl_setopt($ch, CURLOPT_URL, $upload_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
