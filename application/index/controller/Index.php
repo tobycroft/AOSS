@@ -66,7 +66,7 @@ class Index extends \think\Controller
         }
         if ($proc["type"] == "remote" || $proc["type"] == "all") {
             $sf = new SendFile();
-            $ret = $sf->send('http://' . $proc["endpoint"] . '/up?token=' . $proc["bucket"], $file->getRealPath(), $file->getInfo('type'), $file->getInfo('name'));
+            $ret = $sf->send('http://' . $proc["endpoint"] . '/up?token=' . $proc["bucket"], $file->getPath(), $file->getInfo('type'), $file->getInfo('name'));
             $json = json_decode($ret, 1);
             $fileName = ($full ? $proc['url'] . '/' : '') . $json["data"];
             unlink($info->getPathname());
