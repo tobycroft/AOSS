@@ -3,6 +3,7 @@
 namespace app\index\controller;
 
 use think\Request;
+use app\index\model\AttachmentModel;
 
 class Index extends \think\Controller
 {
@@ -35,6 +36,16 @@ class Index extends \think\Controller
         if (!$file) {
             $this->fail('file字段没有用文件提交');
         }
+        $hash = $file->hash('md5');
+        // 判断附件格式是否符合
+        $file_name = $file->getInfo('name');
+
+
+        if ($file_exists = AttachmentModel::get(['md5' => $file->hash('md5')])) {
+            $sav = ($full ? $proc['url'] . '/' : '') . $file_exists['path'];
+            // 附件已存在
+            return $this->succ($sav);
+        }
         $info = $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload/' . $this->token);
 
         $fileName = $proc['name'] . '/' . $info->getSaveName();
@@ -51,7 +62,24 @@ class Index extends \think\Controller
             }
             unlink($info->getPathname());
         }
-
+//        if ($proc["type"] == "remote" || $proc["type"] == "all") {
+//            $oss = new \OSS\AliyunOSS($proc);
+//            $oss->uploadFile($proc['bucket'], $fileName, $info->getPathname());
+//            if ($proc['main_type'] == 'remote') {
+//                $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
+//            }
+//            unlink($info->getPathname());
+//        }
+        $file_info = [
+            'token' => $token,
+            'name' => $file->getInfo('name'),
+            'mime' => $file->getInfo('type'),
+            'path' => $fileName,
+            'ext' => $info->getExtension(),
+            'size' => $info->getSize(),
+            'md5' => $info->hash('md5'),
+        ];
+        AttachmentModel::create($file_info);
         if ($info) {
             if ($ue) {
                 $this->succ(['src' => $sav]);
@@ -167,7 +195,6 @@ class Index extends \think\Controller
         echo json_encode([
             'code' => $code,
             'data' => $data,
-            'path' => $data,
         ], 320);
         exit(0);
     }
