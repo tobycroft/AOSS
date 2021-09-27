@@ -59,9 +59,6 @@ class Index extends \think\Controller
             $sf = new SendFile();
             $ret = $sf->send('http://' . $proc["endpoint"] . '/up?token=' . $proc["bucket"], realpath('./upload/' . $fileName), $file->getInfo('type'), $file->getInfo('name'));
             $json = json_decode($ret, 1);
-            print_r($ret);
-
-            die();
             $sav = ($full ? $proc['url'] . '/' : '') . $json["data"];
         }
         if ($proc["type"] == "oss" || $proc["type"] == "all") {
