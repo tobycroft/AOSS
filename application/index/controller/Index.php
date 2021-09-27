@@ -2,6 +2,7 @@
 
 namespace app\index\controller;
 
+use SendFile\SendFile;
 use think\Request;
 use app\index\model\AttachmentModel;
 use app\index\model\ProjectModel;
@@ -61,6 +62,12 @@ class Index extends \think\Controller
             if ($proc['main_type'] == 'oss') {
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
             }
+            unlink($info->getPathname());
+        }
+        if ($proc["type"] == "remote" || $proc["type"] == "all") {
+            $sf = new SendFile();
+            $sf->send($proc['bucket'] . '://' . $proc["end_point"], $file->getRealPath(), $fileName);
+            $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
             unlink($info->getPathname());
         }
 //        if ($proc["type"] == "remote" || $proc["type"] == "all") {
