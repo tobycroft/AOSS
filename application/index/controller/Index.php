@@ -48,8 +48,8 @@ class Index extends \think\Controller
             // 附件已存在
             return $this->succ($sav);
         }
-        $info = $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload/' . $this->token);
-
+        $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']]);
+        $info = $file->move('./upload/' . $this->token);
         $fileName = $proc['name'] . '/' . $info->getSaveName();
         if ($proc["type"] == "local" || $proc["type"] == "all") {
             if ($proc['main_type'] == 'local') {
