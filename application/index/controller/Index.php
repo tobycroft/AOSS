@@ -43,7 +43,7 @@ class Index extends \think\Controller
         $file_name = $file->getInfo('name');
 
 
-        if ($file_exists = AttachmentModel::get(['token'=>$token,'md5' => $file->hash('md5')])) {
+        if ($file_exists = AttachmentModel::get(['token' => $token, 'md5' => $file->hash('md5')])) {
             $sav = ($full ? $proc['url'] . '/' : '') . $file_exists['path'];
             // 附件已存在
             return $this->succ($sav);
