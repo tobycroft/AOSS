@@ -48,8 +48,7 @@ class Index extends \think\Controller
             // 附件已存在
             return $this->succ($sav);
         }
-        $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']]);
-        $info = $file->move('./upload/' . $this->token);
+        $info = $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload/' . $this->token);
         $fileName = $proc['name'] . '/' . $info->getSaveName();
         if ($proc["type"] == "local" || $proc["type"] == "all") {
             if ($proc['main_type'] == 'local') {
@@ -58,7 +57,7 @@ class Index extends \think\Controller
         }
         if ($proc["type"] == "remote" || $proc["type"] == "all") {
             $sf = new SendFile();
-            print_r($file->getInfo());
+            print_r($fileName);
             die();
             $ret = $sf->send('http://' . $proc["endpoint"] . '/up?token=' . $proc["bucket"], $file->getPathname(), $file->getInfo('type'), $file->getInfo('name'));
             $json = json_decode($ret, 1);
