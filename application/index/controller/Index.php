@@ -76,7 +76,9 @@ class Index extends \think\Controller
             if ($proc['main_type'] == 'oss') {
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
             }
-            unlink($info->getPathname());
+            if ($proc["type"] != "all") {
+                unlink($info->getPathname());
+            }
         }
 
         AttachmentModel::create($file_info);
