@@ -75,7 +75,7 @@ class Index extends \think\Controller
             'mime' => $file->getInfo('type'),
             'path' => $fileName,
             'ext' => $info->getExtension(),
-            'size' => $info->getSize(),
+            'size' => $info->getInfo('size'),
             'md5' => $info->hash('md5'),
         ];
         AttachmentModel::create($file_info);
