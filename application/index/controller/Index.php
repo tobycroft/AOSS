@@ -49,6 +49,10 @@ class Index extends \think\Controller
             return $this->succ($sav);
         }
         $info = $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload/' . $this->token);
+		if(!$info){
+			$this->fail($file->getError());
+			return;
+		}
         $fileName = $proc['name'] . '/' . $info->getSaveName();
         $file_info = [
             'token' => $token,
