@@ -30,6 +30,7 @@ class Index extends \think\Controller
     {
         $token = $this->token;
         $proc = ProjectModel::api_find_token($token);
+        die();
         if (!$proc) {
             $this->fail('项目不可用');
         }
@@ -38,7 +39,6 @@ class Index extends \think\Controller
         if (!$file) {
             $this->fail('file字段没有用文件提交');
         }
-        die();
         $hash = $file->hash('md5');
         // 判断附件格式是否符合
         $file_name = $file->getInfo('name');
