@@ -95,14 +95,14 @@ class Query
      * @var array
      */
     protected $timeRule = [
-        'today'      => ['today', 'tomorrow'],
-        'yesterday'  => ['yesterday', 'today'],
-        'week'       => ['this week 00:00:00', 'next week 00:00:00'],
-        'last week'  => ['last week 00:00:00', 'this week 00:00:00'],
-        'month'      => ['first Day of this month 00:00:00', 'first Day of next month 00:00:00'],
-        'last month' => ['first Day of last month 00:00:00', 'first Day of this month 00:00:00'],
-        'year'       => ['this year 1/1', 'next year 1/1'],
-        'last year'  => ['last year 1/1', 'this year 1/1'],
+        'today'      => ['today', 'tomorrow -1second'],
+        'yesterday'  => ['yesterday', 'today -1second'],
+        'week'       => ['this week 00:00:00', 'next week 00:00:00 -1second'],
+        'last week'  => ['last week 00:00:00', 'this week 00:00:00 -1second'],
+        'month'      => ['first Day of this month 00:00:00', 'first Day of next month 00:00:00 -1second'],
+        'last month' => ['first Day of last month 00:00:00', 'first Day of this month 00:00:00 -1second'],
+        'year'       => ['this year 1/1', 'next year 1/1 -1second'],
+        'last year'  => ['last year 1/1', 'this year 1/1 -1second'],
     ];
 
     /**
@@ -133,7 +133,27 @@ class Query
      */
     public function newQuery()
     {
-        return new static($this->connection);
+        $query = new static($this->connection);
+
+        if ($this->model) {
+            $query->model($this->model);
+        }
+
+        if (isset($this->options['table'])) {
+            $query->table($this->options['table']);
+        } else {
+            $query->name($this->name);
+        }
+
+        if (isset($this->options['json'])) {
+            $query->json($this->options['json'], $this->options['json_assoc']);
+        }
+
+        if (isset($this->options['field_type'])) {
+            $query->setJsonFieldType($this->options['field_type']);
+        }
+
+        return $query;
     }
 
     /**
@@ -562,12 +582,12 @@ class Query
                 default:
                     if (function_exists($type)) {
                         // 支持指定函数哈希
-                        $seq = (ord(substr($type($value), 0, 1)) % $rule['num']) + 1;
-                    } else {
-                        // 按照字段的首字母的值分表
-                        $seq = (ord($value{0}) % $rule['num']) + 1;
+                        $value = $type($value);
                     }
+
+                    $seq = (ord(substr($value, 0, 1)) % $rule['num']) + 1;
             }
+
             return $this->getTable() . '_' . $seq;
         }
         // 当设置的分表字段不在查询条件或者数据中
@@ -1744,7 +1764,7 @@ class Query
      *                            var_page:分页变量,
      *                            list_rows:每页数量
      *                            type:分页类名
-     * @return \think\Paginator
+     * @return $this[]|\think\Paginator
      * @throws DbException
      */
     public function paginate($listRows = null, $simple = false, $config = [])
@@ -2470,7 +2490,7 @@ class Query
         if (is_array($value)) {
             $this->bind = array_merge($this->bind, $value);
         } else {
-            $name = $name ?: 'ThinkBind_' . (count($this->bind) + 1) . '_';
+            $name = $name ?: 'ThinkBind_' . (count($this->bind) + 1) . '_' . mt_rand() . '_';
 
             $this->bind[$name] = [$value, $type];
             return $name;
@@ -3444,7 +3464,7 @@ class Query
     }
 
     /**
-     * 查找单条记录 如果不存在则抛出异常
+     * 查找单条记录 不存在则返回空模型
      * @access public
      * @param  array|string|Query|\Closure $data
      * @return array|\PDOStatement|string|Model
