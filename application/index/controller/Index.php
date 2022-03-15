@@ -29,9 +29,9 @@ class Index extends \think\Controller
     public function upload_file(Request $request, $full = 0, $ue = 0)
     {
         $token = $this->token;
-        print_r($token);
-        die();
         $proc = ProjectModel::api_find_token($token);
+print_r($proc);
+die();
         if (!$proc) {
             $this->fail('项目不可用');
         }
