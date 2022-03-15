@@ -41,7 +41,8 @@ class Index extends \think\Controller
         $hash = $file->hash('md5');
         // 判断附件格式是否符合
         $file_name = $file->getInfo('name');
-
+        print_r($file_name);
+        die();
 
         if ($file_exists = AttachmentModel::get(['token' => $token, 'md5' => $file->hash('md5')])) {
             $sav = ($full ? $proc['url'] . '/' : '') . $file_exists['path'];
@@ -63,8 +64,7 @@ class Index extends \think\Controller
             'size' => $info->getSize(),
             'md5' => $info->hash('md5'),
         ];
-        print_r($file_info);
-        die();
+
         if ($proc["type"] == "local" || $proc["type"] == "all") {
             if ($proc['main_type'] == 'local') {
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
