@@ -84,7 +84,7 @@ class Index extends \think\Controller
                 unlink($info->getPathname());
             }
         }
-
+        print_r($file_info);
         AttachmentModel::create($file_info);
         if ($info) {
             if ($ue) {
