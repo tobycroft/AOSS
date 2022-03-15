@@ -30,8 +30,6 @@ class Index extends \think\Controller
     {
         $token = $this->token;
         $proc = ProjectModel::api_find_token($token);
-print_r($proc);
-die();
         if (!$proc) {
             $this->fail('项目不可用');
         }
