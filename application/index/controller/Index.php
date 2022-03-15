@@ -63,6 +63,8 @@ class Index extends \think\Controller
             'size' => $info->getSize(),
             'md5' => $info->hash('md5'),
         ];
+        print_r($file_info);
+        die();
         if ($proc["type"] == "local" || $proc["type"] == "all") {
             if ($proc['main_type'] == 'local') {
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
@@ -84,8 +86,7 @@ class Index extends \think\Controller
                 unlink($info->getPathname());
             }
         }
-        print_r($file_info);
-        die();
+
         AttachmentModel::create($file_info);
         if ($info) {
             if ($ue) {
