@@ -85,6 +85,7 @@ class Index extends \think\Controller
             }
         }
         print_r($file_info);
+        die();
         AttachmentModel::create($file_info);
         if ($info) {
             if ($ue) {
