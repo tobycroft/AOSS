@@ -69,7 +69,7 @@ class Index extends \think\Controller
     public function daishou_huitiao()
     {
         $pay = new Shineupay();
-        $ret = $pay->pay_notify("商户订单号，商户的不是你系统的");
+        $ret = $pay->pay_notify();
         if ($ret["status"] == true) {
             //流水号
             $liu_shui_hao = $ret["trans_sn"];
@@ -78,19 +78,6 @@ class Index extends \think\Controller
             echo $pay_url;
         } else {
             echo $ret["msg"];
-        }
-    }
-
-
-    public function huidiao()
-    {
-        $pay = new Shineupay();
-        $ret = $pay->pay_notify();
-        if ($ret["status"] == true) {
-            //流水号
-            $liu_shui_hao = $ret["trans_sn"];
-            //支付地址
-            $pay_url = $ret["pay_url"];
         }
     }
 
