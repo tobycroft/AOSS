@@ -83,7 +83,8 @@ class Index extends \think\Controller
 
     public function tiaozhuan()
     {
-        echo "这是个跳转页面";
+//        echo "这是个跳转页面";
+        echo 'success';
     }
 
 
