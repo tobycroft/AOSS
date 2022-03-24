@@ -74,6 +74,7 @@ class Index extends \think\Controller
             'log' => json_encode($ret)
         ]);
         if ($ret["status"] == true) {
+            //调用$ret["order_id"]你写道数据库里面去，匹配单子成功的order_id
             echo 'success';
         } else {
             echo 'FAIL';
