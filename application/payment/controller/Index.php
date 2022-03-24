@@ -14,11 +14,7 @@ class Index extends \think\Controller
 
     public function initialize()
     {
-        header('Access-Control-Allow-Origin:*');
-        $this->token = input('get.token');
-        if (!$this->token) {
-            $this->fail('token');
-        }
+
     }
 
     public function index()
