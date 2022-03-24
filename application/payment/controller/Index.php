@@ -24,7 +24,7 @@ class Index extends \think\Controller
 
     public function create_order()
     {
-        $pay = new shineuPay();
+        $pay = new Shineupay();
         $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
     }
 

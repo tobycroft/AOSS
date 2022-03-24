@@ -3,7 +3,7 @@
 namespace Shineupay;
 
 /****006支付应用类 OK****/
-class shineuPay
+class Shineupay
 {
 
     /***配置参数***/
