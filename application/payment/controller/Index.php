@@ -88,28 +88,4 @@ class Index extends \think\Controller
     }
 
 
-    public function daifu()
-    {
-        $pay = new Shineupay();
-        $ret = $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
-        if ($ret["status"] == true) {
-            //流水号
-            $liu_shui_hao = $ret["trans_sn"];
-            //支付地址
-            $pay_url = $ret["pay_url"];
-        }
-    }
-
-    public function daifu_huitiao()
-    {
-        $pay = new Shineupay();
-        $ret = $pay->df_notify();
-        if ($ret) {
-            echo 'success';
-        } else {
-            echo 'FAIL';
-        }
-    }
-
-
 }
