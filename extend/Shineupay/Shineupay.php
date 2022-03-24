@@ -25,13 +25,6 @@ class Shineupay
         $this->tixian = 'e10adc3949ba59abbe56e057f20f883e';                 //提现密钥
     }
 
-
-    /*
-    ***创建支付订单*
-    *string $order   订单号  不能重复
-    *int    $money   金额
-    *string $details 支付商品说明
-    */
     public function create_order($order, $money, $user_id, $remark)
     {
         $key = $this->secret_key; //商户密钥
@@ -56,169 +49,82 @@ class Shineupay
         }
     }
 
-
-    /*
-    ***查询支付订单*
-    *string $order 商户订单号
-    */
-    public function pay_query()
+    //查询代收订单
+    public function pay_check($trans_sn)
     {
-//接受参数
-        $order = $_GET['order']; //商户订单号
-
-//判断参数是否为空
-        var_empty($order, '0', '商户订单号不能为空');
-
-//判断参数类型
-        var_num($order, '0', '商户订单号是数字');
-//接口验证签名 【整合系统时候使用.暂时不用管】
-        $hkey = md5($_GET['order'] . $_GET['money']);
-// if ($_GET['key'] != $hkey) {
-//     info('0', '签名错误');
-// }
-
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/pay/query"; //网关地址
-        $params["orderId"] = $order;    //订单号
+        $params["orderId"] = $trans_sn;    //订单号
         $params["details"] = "details"; //支付商品说明
         $params['userId'] = "57899";
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
-//组装数据
         $data['body'] = $params;
         $data['merchantId'] = $this->merchantId;
         $data['timestamp'] = "$getMillisecond";
-//报文签名
         $sign = $this->sign($key, $data);
-//封装请求头
         $headers = array("Content-type: application/json;charset=UTF-8", "Accept: application/json", "Cache-Control: no-cache", "Pragma: no-cache", "Api-Sign:$sign");
-//发起post请求
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
-
-        /*
-        交易状态：status
-        0	尚未付款，订单已创建
-        1	付款成功
-        2	付款失败，请重新支付（二维码过期，超时付款等）
-        3	付款中，表示等待付款中
-        91	金额异常，支付订单金额出现异常
-        create_order	创建订单
-        PAY_ING	    正在支付中
-        PAY_FAIL	支付失败
-        PAY_SUCCESS	支付成功
-
-        //返回值
-        status	int	       是	订单状态 ，请点此查看订单状态码
-        amount	decimal		订单金额
-        message	string		订单状态为2时候将会返回错误描述
-        */
-
-//判断是否成功
         if ($res['body']['status'] == 1) {
             $code = array('code' => '200', 'trans_sn' => $res['data']['platOrderId'], 'status' => "PAY_SUCCESS", 'msg' => '支付成功');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         } else if ($res['body']['status'] == 0) {
             $code = array('code' => '200', 'trans_sn' => $res['data']['platOrderId'], 'status' => "create_order", 'msg' => '创建订单');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         } else if ($res['body']['status'] == 2) {
             $code = array('code' => '0', 'msg' => '支付失败');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         } else if ($res['body']['status'] == 3) {
             $code = array('code' => '200', 'trans_sn' => $res['data']['platOrderId'], 'status' => "PAY_ING", 'msg' => '正在支付中');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
     }
 
-    /****异步回调代收订单****/
+    //回调代收订单
     public function pay_notify()
     {
-//接受Post值
         $contents = file_get_contents('php://input');
-        file_put_contents("pay_notify.txt", $contents, FILE_APPEND);
-//全局参数
         $secret_key = $this->secret_key; //商户密钥
-//报文加密
         $str = $contents . "|" . $secret_key;
         $signr = MD5($str);
-//接受头部header信息
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
         }
-//存储头部信息
-        file_put_contents("pay_notify.txt", json_encode($headers), FILE_APPEND);
-//获取签名MD5值
         $sign = $headers['Api-Sign'];
-//验签
         if ($sign != $signr) {
-//验签失败
-            echo '签名出错';
-            exit;
+            return ["status" => false, "msg" => "签名出错"];
         }
         $post = json_decode($contents, true);
-//接受参数
         $params['orderId'] = $post['body']['orderId']; //商户单号
         $params['platformOrderId'] = $post['body']['platformOrderId']; //第三方单号
         $status = $params['status'] = $post['body']['status']; //支付状态     0	尚未付款，订单已创建1	付款成功2	付款失败，请重新支付（二维码过期，超时付款等）3	付款中，表示等待付款中91	金额异常，支付订单金额出现异常
         if ($post['status'] == 2) $params['message'] = $post['body']['message']; //消息通知
         $params['amount'] = $post['body']['amount']; //支付金额
         $params['payType'] = $post['body']['payType']; //支付通道
-
         if ($params['status'] == 1) $params['PayTime'] = $post['PayTime']; //支付时间
-//判断签名是否正确
         if ($signr == $sign) {
-
-//执行支付成功
-            if ($status == 1) { //PAY_FAIL-支付失败  PAY_SUCCESS-支付成功
-//1.判断订单状态是否已经处理，防止重复通知
-//已经处理过的直接返回success
-//if(){
-//echo 'success'; //成功
-//}
-
-//2.执行订单加款
-                $user = new user(); //用户类
-                $user->pay_order($params['orderId']); //商户代收订单号执行加款   -  这里填写指定订单号
-            }
-
-//返回结果
-            echo 'success'; //成功
+            return ["status" => true, "data" => $params];
         } else {
-            echo 'FAIL'; // 失败
+            return ["status" => false, "msg" => ""];
         }
     }
 
 
     /****查询钱包余额****/
-    public function money_query()
+    public function check_balance()
     {
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/withdraw/balance"; //网关地址
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
-//组装数据
         $data['body'] = (object)null;
         $data['merchantId'] = $this->merchantId;
         $data['timestamp'] = "$getMillisecond";
-//报文签名
         $sign = $this->sign($key, $data);
-//封装请求头
         $headers = array("Content-type: application/json;charset=UTF-8", "Accept: application/json", "Cache-Control: no-cache", "Pragma: no-cache", "Api-Sign:$sign");
-//发起post请求
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
-//        交易状态：status
-//        create_order	创建订单
-//        PAY_ING	    正在支付中
-//        PAY_FAIL	支付失败
-//        PAY_SUCCESS	支付成功
-//判断是否成功
         if ($res['body']['status'] == '0') {
-            $code = array('code' => '200', 'money_query' => $res['body']['amount'], 'msg' => '查询成功');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $code = array('status' => true, 'balance' => $res['body']['amount']);
         } else {
-            $code = array('code' => '0', 'msg' => '查询失败');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            return ["status" => false, "msg" => ""];
         }
     }
 
