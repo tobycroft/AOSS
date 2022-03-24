@@ -104,7 +104,7 @@ class Shineupay
         if ($params['status'] == 1) $params['PayTime'] = $post['PayTime']; //支付时间
         if ($signr == $sign) {
             if ($status == 1) {
-                return ["status" => true, "data" => $params, "order_id" => $params['orderId']];
+                return ["status" => true, "data" => $params];
             } else {
                 return ["status" => false, "msg" => $params['message']];
             }
