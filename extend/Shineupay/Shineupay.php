@@ -15,7 +15,7 @@ class shineuPay
     var $tixian;        //提现密钥
 
     /****构造函数*****/
-    public function __construct($method)
+    public function __construct()
     {
         $this->merchantId = "BFURJK9KB0N45734"; //商户编号;
         $this->secret_key = 'ae88b583d79b4ccab28c63592e05ca46'; //商户密钥
