@@ -83,7 +83,6 @@ class Shineupay
     public function pay_notify()
     {
         $contents = file_get_contents('php://input');
-        return $contents;
         $secret_key = $this->secret_key; //商户密钥
         $str = $contents . "|" . $secret_key;
         $signr = MD5($str);

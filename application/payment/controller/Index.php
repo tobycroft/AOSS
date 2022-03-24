@@ -70,8 +70,8 @@ class Index extends \think\Controller
         $pay = new Shineupay();
         $ret = $pay->pay_notify();
         \app\payment\model\LogModel::create([
-//            'log' => json_encode($ret)
-            'log' => $ret
+            'log' => json_encode($ret)
+//            'log' => $ret
         ]);
         if ($ret["status"] == true) {
             //调用$ret["order_id"]你写道数据库里面去，匹配单子成功的order_id
