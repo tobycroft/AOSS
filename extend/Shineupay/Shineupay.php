@@ -34,7 +34,6 @@ class Shineupay
     */
     public function create_order($order, $money, $user_id, $remark)
     {
-
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/pay/create"; //网关地址
         $params["orderId"] = $order;                           //订单号
@@ -45,23 +44,15 @@ class Shineupay
         $data['body'] = $params;
         $data['merchantId'] = $this->merchantId;
         $data['timestamp'] = "$getMillisecond";
-
         $sign = $this->sign($key, $data, $getMillisecond);
         $headers = array("Content-type: application/json;charset=UTF-8", "Accept: application/json", "Cache-Control: no-cache", "Pragma: no-cache", "Api-Sign:$sign");
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
 
         if ($res['body']['contentType'] == '0') {
-// 参数名	         类型	     说明
-// merchantId	   string   	商户号
-// transactionId   string  	    订单号
-// content	       string	    收银台地址
-// contentType     string	    请求状态
-            $code = array('code' => '200', 'pay_url' => $res['body']['content'], 'trans_sn' => $res['body']['transactionId'], 'msg' => '创建成功');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            return array('status' => true, 'pay_url' => $res['body']['content'], 'trans_sn' => $res['body']['transactionId'], 'msg' => '创建成功');
         } else {
-            $code = array('code' => '0', 'msg' => '创建失败');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            return array('status' => false, 'msg' => '创建失败');
         }
     }
 
