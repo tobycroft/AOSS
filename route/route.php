@@ -9,6 +9,6 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
+Route::any('index/:controller/:action', ':index/:controller/:action');
 Route::any(':controller/:action', 'index/:controller/:action');
 Route::any(':action', 'index/index/:action');
