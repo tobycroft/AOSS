@@ -122,7 +122,7 @@ class Shineupay
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
         if ($res['status'] == '0') {
-            return array('status' => true, 'balance' => $res['body']['balance']);
+            return array('status' => true, 'balance' => $res['body']['balance'], "freeze_balance" => $res["body"]["frozenBalance"]);
         } else {
             return ["status" => false, "msg" => ""];
         }
