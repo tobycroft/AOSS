@@ -25,21 +25,55 @@ class Index extends \think\Controller
     public function create_order()
     {
         $pay = new Shineupay();
-        $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
+        $ret = $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
+        if ($ret["status"] == true) {
+            //流水号
+            $liu_shui_hao = $ret["trans_sn"];
+            //支付地址
+            $pay_url = $ret["pay_url"];
+            echo $pay_url;
+        } else {
+            echo $ret["msg"];
+        }
     }
 
-    public function succ($data = '成功', $code = 0)
+    public function huidiao()
     {
-        echo json_encode([
-            'code' => $code,
-            'data' => $data,
-        ], 320);
-        exit(0);
+        $pay = new Shineupay();
+        $ret = $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
+        if ($ret["status"] == true) {
+            //流水号
+            $liu_shui_hao = $ret["trans_sn"];
+            //支付地址
+            $pay_url = $ret["pay_url"];
+        }
     }
 
-    public function fail($data = '失败', $code = 400)
+
+    public function tiaozhuan()
     {
-        $this->succ($data, $code);
+        $pay = new Shineupay();
+        $ret = $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
+        if ($ret["status"] == true) {
+            //流水号
+            $liu_shui_hao = $ret["trans_sn"];
+            //支付地址
+            $pay_url = $ret["pay_url"];
+        }
     }
+
+
+    public function daifu()
+    {
+        $pay = new Shineupay();
+        $ret = $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
+        if ($ret["status"] == true) {
+            //流水号
+            $liu_shui_hao = $ret["trans_sn"];
+            //支付地址
+            $pay_url = $ret["pay_url"];
+        }
+    }
+
 
 }
