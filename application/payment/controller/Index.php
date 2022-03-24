@@ -113,5 +113,16 @@ class Index extends \think\Controller
         }
     }
 
+    public function daifu_huitiao()
+    {
+        $pay = new Shineupay();
+        $ret = $pay->df_notify();
+        if ($ret) {
+            echo 'success';
+        } else {
+            echo 'FAIL';
+        }
+    }
+
 
 }

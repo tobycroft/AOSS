@@ -347,76 +347,23 @@ class Shineupay
     /****回调代付订单****/
     public function df_notify()
     {
-
-
-//接受Post值
         $contents = file_get_contents('php://input');
-        file_put_contents("pay_notify.txt", $contents, FILE_APPEND);
-//全局参数
         $secret_key = $this->secret_key; //商户密钥
-//报文加密
         $str = $contents . "|" . $secret_key;
         $signr = MD5($str);
-//转成数组
         $post = json_decode($contents, true);
-//接受参数
         $params['orderId'] = $post['body']['orderId']; //商户单号
         $platformOrderId = $params['platformOrderId'] = $post['body']['platformOrderId']; //第三方单号
         $params['status'] = $post['body']['status']; //支付状态     0	尚未付款，订单已创建1	付款成功2	付款失败，请重新支付（二维码过期，超时付款等）3	付款中，表示等待付款中91	金额异常，支付订单金额出现异常
         if ($post['status'] == 2) $params['message'] = $post['body']['message']; //消息通知
-
-//接受头部header信息
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
         }
-//获取签名MD5值
         $sign = $headers['Api-Sign'];
-//存储头部信息
-        file_put_contents("pay_notify.txt", json_encode($headers), FILE_APPEND);
-
-//判断签名是否正确
         if ($signr == $sign) {
-
-//链接MYSQL
-            $conn = database::Get_Mysql();
-
-//获取当前订单状态代付状态
-            $sql = "SELECT paid_status FROM `id_user_bank_card_withdrawal` where order_id ='$platformOrderId'";
-            $stmt = $conn->prepare($sql); //预处理SQL
-            $stmt->execute(); //执行
-            $result = $stmt->get_result(); //获取结果资源
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_array(MYSQLI_ASSOC);
-                $paid_status = $row['paid_status']; //代付状态：0未提交 3已提交 1支付成功 2支付失败
-            }
-
-//代付状态 必须不等于支付成功，如果已经支付成功了，则不执行
-            if ($post['status'] != 1) {
-//执行支付成功
-                if ($params['status'] == 1) {
-//更改提现订单状态 改为1=支付成功
-                    $sql = "UPDATE `id_user_bank_card_withdrawal` SET `paid_status` = '1' WHERE order_id ='$platformOrderId'";
-                    $stmt = $conn->prepare($sql); //预处理SQL
-                    $stmt->execute(); //执行
-                }
-//执行支付失败
-                if ($params['status'] == 2) {
-//更改提现订单状态 改为2=支付失败
-                    $sql = "UPDATE `id_user_bank_card_withdrawal` SET `paid_status` = '2' WHERE order_id ='$platformOrderId'";
-                    $stmt = $conn->prepare($sql); //预处理SQL
-                    $stmt->execute(); //执行
-                }
-            }
-
-//返回结果
-            echo 'success'; //成功
-// $str = '第三方订单号：' . $settle_sn;
-// $str .= '商户单号：' . $down_sn;
-// $str .= '支付状态：' . $status;
-// $str .= '支付金额：' . $amount;
-// file_put_contents("pay_sites.txt", $str);  //临时记录日志，海乐正式对接时候请删除
+            return true; //成功
         } else {
             echo 'FAIL'; // 失败
         }
