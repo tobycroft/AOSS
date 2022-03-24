@@ -49,10 +49,10 @@ class Index extends \think\Controller
             return $this->succ($sav);
         }
         $info = $file->validate(['size' => (float)$proc['size'] * 1024, 'ext' => $proc['ext']])->move('./upload/' . $this->token);
-		if(!$info){
-			$this->fail($file->getError());
-			return;
-		}
+        if (!$info) {
+            $this->fail($file->getError());
+            return;
+        }
         $fileName = $proc['name'] . '/' . $info->getSaveName();
         $file_info = [
             'token' => $token,
@@ -63,6 +63,7 @@ class Index extends \think\Controller
             'size' => $info->getSize(),
             'md5' => $info->hash('md5'),
         ];
+
         if ($proc["type"] == "local" || $proc["type"] == "all") {
             if ($proc['main_type'] == 'local') {
                 $sav = ($full ? $proc['url'] . '/' : '') . $fileName;
