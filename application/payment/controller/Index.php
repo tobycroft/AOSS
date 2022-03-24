@@ -1,6 +1,6 @@
 <?php
 
-namespace app\index\controller;
+namespace app\payment\controller;
 
 use SendFile\SendFile;
 use think\Request;
