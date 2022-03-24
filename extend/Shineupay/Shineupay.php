@@ -34,6 +34,8 @@ class Shineupay
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
         $params["details"] = $remark; //支付商品说明
         $params["userId"] = $user_id;    //商户会员标识
+        $params["notifyUrl"] = $this->pay_notify_url;    //商户会员标识
+        $params["redirectUrl"] = $this->pay_callbackUrl;    //商户会员标识
         $data['body'] = $params;
         $data['merchantId'] = $this->merchantId;
         $data['timestamp'] = "$getMillisecond";
