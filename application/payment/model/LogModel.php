@@ -8,9 +8,11 @@
 
 namespace app\payment\model;
 
-class LogModel
+use think\Model;
+
+class LogModel extends Model
 {
 
-    static $table = 'ao_log';
+    protected $table = 'ao_log';
 
 }

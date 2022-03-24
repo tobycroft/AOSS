@@ -70,14 +70,11 @@ class Index extends \think\Controller
     {
         $pay = new Shineupay();
         $ret = $pay->pay_notify();
+        \app\payment\model\LogModel::create
         if ($ret["status"] == true) {
-            //流水号
-            $liu_shui_hao = $ret["trans_sn"];
-            //支付地址
-            $pay_url = $ret["pay_url"];
-            echo $pay_url;
+            echo 'success';
         } else {
-            echo $ret["msg"];
+            echo 'FAIL';
         }
     }
 
