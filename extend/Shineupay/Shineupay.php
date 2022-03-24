@@ -106,7 +106,7 @@ class Shineupay
             if ($status == 1) {
                 return ["status" => true, "data" => $params];
             } else {
-                return ["status" => false, "msg" => $params['message']];
+                return ["status" => false, "data" => $params];
             }
         } else {
             return ["status" => false, "msg" => $params['message']];
