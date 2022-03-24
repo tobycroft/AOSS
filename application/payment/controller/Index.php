@@ -11,7 +11,6 @@ use app\index\model\ProjectModel;
 class Index extends \think\Controller
 {
 
-    public $token;
 
     public function initialize()
     {
@@ -26,7 +25,7 @@ class Index extends \think\Controller
     public function create_order()
     {
         $pay = new shineuPay();
-        $pay->create_order("dingdanhao".time(),1.00,12,"beizhushuoming");
+        $pay->create_order("dingdanhao" . time(), 1.00, 12, "beizhushuoming");
     }
 
     public function succ($data = '成功', $code = 0)
