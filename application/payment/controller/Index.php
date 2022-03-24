@@ -19,7 +19,6 @@ class Index extends \think\Controller
 
     public function index()
     {
-        dump(config('aliyun.'));
     }
 
     public function create_order()
