@@ -122,7 +122,7 @@ class Shineupay
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
         if ($res['body']['status'] == '0') {
-            $code = array('status' => true, 'balance' => $res['body']['amount']);
+            return array('status' => true, 'balance' => $res['body']['amount']);
         } else {
             return ["status" => false, "msg" => ""];
         }
