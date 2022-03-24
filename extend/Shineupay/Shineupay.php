@@ -38,7 +38,6 @@ class Shineupay
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/pay/create"; //网关地址
         $params["orderId"] = $order;                           //订单号
-        echo $order;
         $params["amount"] = $money; //支付金额
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
         $params["details"] = $remark; //支付商品说明
@@ -575,7 +574,7 @@ class Shineupay
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         $output = curl_exec($curl);
         if (curl_errno($curl)) {
