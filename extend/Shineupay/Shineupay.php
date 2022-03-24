@@ -219,8 +219,8 @@ class Shineupay
         $params['amount'] = $amount / 100; //float	是	提现金额
         $params['details'] = "details"; //string		提现说明
         $params['notifyUrl'] = $this->df_notify_url; //string		异步通知地址
-        $params['receiveCurrency'] = "INR"; //string		收款人收款货币 印度传INR 巴西传BRL
-        $params['settlementCurrency'] = "INR";       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
+        $params['receiveCurrency'] = "JPY"; //string		收款人收款货币 印度传INR 巴西传BRL
+        $params['settlementCurrency'] = "JPY";       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
         $params['prodName'] = "ind.bankcard.payout"; //string		代付类型编码
 
 //银行卡信息
