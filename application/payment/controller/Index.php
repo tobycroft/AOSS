@@ -70,7 +70,9 @@ class Index extends \think\Controller
     {
         $pay = new Shineupay();
         $ret = $pay->pay_notify();
-        \app\payment\model\LogModel::create
+        \app\payment\model\LogModel::create([
+            'log' => json_encode($ret)
+        ]);
         if ($ret["status"] == true) {
             echo 'success';
         } else {
