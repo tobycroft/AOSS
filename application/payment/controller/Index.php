@@ -2,25 +2,11 @@
 
 namespace app\payment\controller;
 
-use SendFile\SendFile;
 use Shineupay\Shineupay;
-use think\Request;
-use app\index\model\AttachmentModel;
 use app\index\model\LogModel;
 
 class Index extends \think\Controller
 {
-
-
-    public function initialize()
-    {
-
-    }
-
-    public function index()
-    {
-    }
-
     public function create_order()
     {
         $pay = new Shineupay();
@@ -29,10 +15,10 @@ class Index extends \think\Controller
             //流水号
             $liu_shui_hao = $ret["trans_sn"];
             //支付地址
-            $pay_url = $ret["pay_url"];
-            echo $pay_url;
+//            $pay_url = $ret["pay_url"];
+//            echo $pay_url;
         } else {
-            echo $ret["msg"];
+//            echo $ret["msg"];
         }
     }
 
@@ -46,9 +32,9 @@ class Index extends \think\Controller
             $liu_shui_hao = $ret["trans_sn"];
             //支付地址
             $pay_url = $ret["pay_url"];
-            echo $pay_url;
+//            echo $pay_url;
         } else {
-            echo $ret["msg"];
+//            echo $ret["msg"];
         }
     }
 
@@ -58,9 +44,9 @@ class Index extends \think\Controller
         $ret = $pay->check_balance();
         if ($ret["status"] == true) {
             $balance = $ret["balance"];
-            echo $balance;
+//            echo $balance;
         } else {
-            echo $ret["msg"];
+//            echo $ret["msg"];
         }
     }
 
