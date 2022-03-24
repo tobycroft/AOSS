@@ -3,7 +3,7 @@
 namespace app\payment\controller;
 
 use SendFile\SendFile;
-use Shineupay\shineuPay;
+use Shineupay\Shineupay;
 use think\Request;
 use app\index\model\AttachmentModel;
 use app\index\model\ProjectModel;
