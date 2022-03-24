@@ -102,7 +102,6 @@ class Shineupay
         if ($post['status'] == 2) $params['message'] = $post['body']['message']; //消息通知
         $params['amount'] = $post['body']['amount']; //支付金额
         $params['payType'] = $post['body']['payType']; //支付通道
-        if ($params['status'] == 1) $params['PayTime'] = $post['PayTime']; //支付时间
         if ($signr == $sign) {
             if ($status == 1) {
                 return ["status" => true, "data" => $params, "orderId" => $params['orderId']];
