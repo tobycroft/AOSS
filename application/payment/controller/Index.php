@@ -24,7 +24,7 @@ class Index extends \think\Controller
     public function create_order()
     {
         $pay = new Shineupay();
-        $ret = $pay->create_order("dingdanhao" . time(), 1, 12, "beizhushuoming");
+        $ret = $pay->create_order("dingdanhao" . time(), "JPY", 100, 12, "beizhushuoming");
         if ($ret["status"] == true) {
             //流水号
             $liu_shui_hao = $ret["trans_sn"];

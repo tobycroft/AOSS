@@ -25,11 +25,12 @@ class Shineupay
         $this->tixian = 'e10adc3949ba59abbe56e057f20f883e';                 //提现密钥
     }
 
-    public function create_order($order, $money, $user_id, $remark)
+    public function create_order($order, $currency, $money, $user_id, $remark)
     {
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/pay/create"; //网关地址
         $params["orderId"] = $order;                           //订单号
+        $params["receiveCurrency"] =$currency ;                           //订单号
         $params["amount"] = $money; //支付金额
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
         $params["details"] = $remark; //支付商品说明
@@ -219,8 +220,8 @@ class Shineupay
         $params['amount'] = $amount / 100; //float	是	提现金额
         $params['details'] = "details"; //string		提现说明
         $params['notifyUrl'] = $this->df_notify_url; //string		异步通知地址
-        $params['receiveCurrency'] = "JPY"; //string		收款人收款货币 印度传INR 巴西传BRL
-        $params['settlementCurrency'] = "JPY";       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
+        $params['receiveCurrency'] = "INR"; //string		收款人收款货币 印度传INR 巴西传BRL
+        $params['settlementCurrency'] = "INR";       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
         $params['prodName'] = "ind.bankcard.payout"; //string		代付类型编码
 
 //银行卡信息
