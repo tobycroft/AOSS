@@ -181,76 +181,32 @@ class Shineupay
 
     /****查询代付订单****/
     public
-    function df_query()
+    function check_daifu($orderId)
     {
-//接受参数
-        $order = $_GET['order']; //商户订单号
-
-//判断参数是否为空
-        var_empty($order, '0', '商户订单号不能为空');
-
-//判断参数类型
-        var_num($order, '0', '商户订单号是数字');
-
-//接口验证签名 【整合系统时候使用.暂时不用管】
-        $hkey = md5($_GET['order'] . $_GET['money']);
-// if ($_GET['key'] != $hkey) {
-//     info('0', '签名错误');
-// }
-
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/withdraw/query"; //网关地址
-        $params["orderId"] = $order; //订单号
+        $params["orderId"] = $orderId; //订单号
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
-//组装数据
         $data['body'] = $params;
         $data['merchantId'] = $this->merchantId;
         $data['timestamp'] = "$getMillisecond";
-//报文签名
         $sign = $this->sign($key, $data);
-//封装请求头
         $headers = array("Content-type: application/json;charset=UTF-8", "Accept: application/json", "Cache-Control: no-cache", "Pragma: no-cache", "Api-Sign:$sign");
-//发起post请求
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
-        /*
-        交易状态：status
-        0	创建成功，尚未汇款
-        1	汇款成功
-        2	汇款失败，详看错误原因请查看message字段，
-        交易状态：status
-        create_order	创建订单
-        PAY_ING	    正在支付中
-        PAY_FAIL	支付失败
-        PAY_SUCCESS	支付成功
-
-        //返回值
-        参数名	     类型	  说明
-        platformOrderId   string   平台订单编号
-        createTime   string   时间格式
-        status       int      交易状态
-        amount       float    金额
-        merchantId   string   商户号
-        timestamp    int      毫秒级时间戳
-        */
-
-//判断是否成功
         if ($res['status'] == 1) {
-            $code = array('code' => '200', 'trans_sn' => $res['bofy']['platformOrderId'], 'status' => "PAY_SUCCESS", 'msg' => '支付成功');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            return ["status" => true, "msg" => "支付成功"];
         } else if ($res['status'] == 0) {
-            $code = array('code' => '200', 'trans_sn' => $res['bofy']['platformOrderId'], 'status' => "create_order", 'msg' => '创建订单');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            return ["status" => false, "msg" => "创建订单"];
         } else if ($res['status'] == 2) {
-            $code = array('code' => '0', 'msg' => '查询失败');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            return ["status" => false, "msg" => "查询失败"];
         }
     }
 
 
     /****回调代付订单****/
     public
-    function df_notify()
+    function daifu_huitiao()
     {
         $contents = file_get_contents('php://input');
         $secret_key = $this->secret_key; //商户密钥
@@ -268,9 +224,17 @@ class Shineupay
         }
         $sign = $headers['Api-Sign'];
         if ($signr == $sign) {
-            return true; //成功
+            if ($post['status'] != 1) {
+                if ($params['status'] == 1) {
+                    return ["status" => false, "data" => $params, "orderId" => $params['orderId']];
+                }
+                if ($params['status'] == 2) {
+                    return ["status" => false, "data" => $params, "orderId" => $params['orderId']];
+                }
+            }
+            return ["status" => true, "data" => $params, "orderId" => $params['orderId']];
         } else {
-            echo 'FAIL'; // 失败
+            return ["status" => false, "msg" => "查询失败"];
         }
     }
 

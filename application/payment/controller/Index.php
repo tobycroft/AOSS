@@ -91,8 +91,18 @@ class Index extends \think\Controller
 
     public function daifu_huitiao()
     {
-//        echo "这是个跳转页面";
-        echo 'success';
+        $pay = new Shineupay();
+        $ret = $pay->daifu_huitiao();
+        \app\payment\model\LogModel::create([
+            'log' => json_encode($ret)
+//            'log' => $ret
+        ]);
+        if ($ret["status"] == true) {
+            //调用$ret["order_id"]你写道数据库里面去，匹配单子成功的order_id
+            echo 'success';
+        } else {
+            echo 'FAIL';
+        }
     }
 
 
