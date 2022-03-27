@@ -172,9 +172,9 @@ class Shineupay
         $res = json_decode($json, true);
         echo $json;
         if ($res['status'] == 0) {
-            return array('status' => true, 'msg' => $res['msg']);
+            return array('status' => true, 'msg' => $res['message']);
         } else {
-            return array('status' => true, 'msg' => $res['msg']);
+            return array('status' => true, 'msg' => $res['message']);
         }
     }
 
