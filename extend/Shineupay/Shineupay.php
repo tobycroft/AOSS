@@ -140,7 +140,7 @@ class Shineupay
     {
 //组装数据
         $params['version'] = "1.0.0"; //默认传1.0.0
-        $params['advPasswordMd5'] = $this->tixian; //string	是	交易密码的md5值（32位小写），详看交易密码说明
+        $params['advPasswordMd5'] = md5($this->tixian); //string	是	交易密码的md5值（32位小写），详看交易密码说明
         $params['orderId'] = $orderId; //string	是	商户订单编号，请确保唯一，最多允许200个字符
         $params['amount'] = $amount100 / 100; //float	是	提现金额
         $params['details'] = "details"; //string		提现说明
