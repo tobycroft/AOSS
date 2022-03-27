@@ -174,7 +174,7 @@ class Shineupay
         if ($res['status'] == 0) {
             return array('status' => true, 'msg' => $res['message']);
         } else {
-            return array('status' => true, 'msg' => $res['message']);
+            return array('status' => false, 'msg' => $res['message']);
         }
     }
 
