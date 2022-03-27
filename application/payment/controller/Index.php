@@ -77,7 +77,7 @@ class Index extends \think\Controller
     public function create_daifu()
     {
         $pay = new Shineupay();
-        $ret = $pay->create_daifu("dingdanhao" . time(), 100 * 100, "VND", "vnm.bankcard.payout", 12345678901, "银行用户姓名", "银行卡号", "HDFC0004369", "123@123.com");
+        $ret = $pay->create_daifu("dingdanhao" . time(), 100 * 100, "INR", "ind.bankcard.payout", 12345678901, "银行用户姓名", "银行卡号", "PYTM0123456", "123@123.com","dizhi");
         if ($ret["status"] == true) {
             //流水号
             $liu_shui_hao = $ret["trans_sn"];

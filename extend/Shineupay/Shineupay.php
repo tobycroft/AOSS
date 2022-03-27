@@ -136,7 +136,7 @@ class Shineupay
 
 
     /****创建代付订单****/
-    public function create_daifu($orderId, $amount100, $currency, $prodName, $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email)
+    public function create_daifu($orderId, $amount100, $currency, $prodName, $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email, $address)
     {
 //组装数据
         $params['version'] = "1.0.0"; //默认传1.0.0
@@ -157,7 +157,7 @@ class Shineupay
         $bankCardInfo['email'] = $bank_email; //String	是	用户邮箱
         $bankCardInfo['province'] = ""; //String	否	银行所在省名称
         $bankCardInfo['city'] = "";     //String	否	银行所在城市名称
-        $bankCardInfo['address'] = ""; //String	否	所在地区名称
+        $bankCardInfo['address'] = $address; //String	否	所在地区名称
         $params['extInfo'] = $bankCardInfo; //收款人银行信息信息
 
         $key = $this->secret_key; //商户密钥
