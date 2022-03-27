@@ -136,7 +136,7 @@ class Shineupay
 
 
     /****创建代付订单****/
-    public function create_daifu($orderId, $amount100, $currency = "INR", $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email)
+    public function create_daifu($orderId, $amount100, $currency, $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email)
     {
 //组装数据
         $params['version'] = "1.0.0"; //默认传1.0.0
