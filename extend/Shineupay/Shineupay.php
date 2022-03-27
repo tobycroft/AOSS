@@ -136,7 +136,7 @@ class Shineupay
 
 
     /****创建代付订单****/
-    public function create_daifu($orderId, $amount100, $currency, $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email)
+    public function create_daifu($orderId, $amount100, $currency, $prodName, $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email)
     {
 //组装数据
         $params['version'] = "1.0.0"; //默认传1.0.0
@@ -147,7 +147,7 @@ class Shineupay
         $params['notifyUrl'] = $this->df_notify_url; //string		异步通知地址
         $params['receiveCurrency'] = $currency; //string		收款人收款货币 印度传INR 巴西传BRL
         $params['settlementCurrency'] = $currency;       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
-        $params['prodName'] = "ind.bankcard.payout"; //string		代付类型编码
+        $params['prodName'] = $prodName; //string		代付类型编码
 
 //银行卡信息
         $bankCardInfo["userName"] = $bank_user_name; //string	是	银行卡的持卡人
