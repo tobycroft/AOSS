@@ -22,7 +22,7 @@ class Shineupay
         $this->pay_notify_url = 'http://upload.tuuz.cc:81/payment/index/daishou_huitiao'; //代收回调域名
         $this->pay_callbackUrl = 'http://upload.tuuz.cc:81/payment/index/tiaozhuan'; //代收跳转域名
         $this->df_notify_url = 'http://upload.tuuz.cc:81/payment/index/daifu_huitiao';   //代付回调域名
-        $this->tixian = 'e10adc3949ba59abbe56e057f20f883e';                 //提现密钥
+        $this->tixian = 'BGGKE8D0KLXC4396';                 //提现密钥
     }
 
     public function create_order($order, $currency, $money, $user_id, $remark)
