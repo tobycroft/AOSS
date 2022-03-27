@@ -146,7 +146,7 @@ class Shineupay
         $params['details'] = "details"; //string		提现说明
         $params['notifyUrl'] = $this->df_notify_url; //string		异步通知地址
         $params['receiveCurrency'] = $currency; //string		收款人收款货币 印度传INR 巴西传BRL
-        $params['settlementCurrency'] = $currency;       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
+        $params['settlementCurrency'] = "";       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
         $params['prodName'] = "ind.bankcard.payout"; //string		代付类型编码
 
 //银行卡信息
