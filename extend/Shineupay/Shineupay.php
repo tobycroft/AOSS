@@ -21,7 +21,7 @@ class Shineupay
         $this->secret_key = 'ae88b583d79b4ccab28c63592e05ca46'; //商户密钥
         $this->pay_notify_url = 'http://upload.tuuz.cc:81/payment/index/daishou_huitiao'; //代收回调域名
         $this->pay_callbackUrl = 'http://upload.tuuz.cc:81/payment/index/tiaozhuan'; //代收跳转域名
-        $this->df_notify_url = 'http://upload.tuuz.cc:81/payment/index/daifu';   //代付回调域名
+        $this->df_notify_url = 'http://upload.tuuz.cc:81/payment/index/daifu_huitiao';   //代付回调域名
         $this->tixian = 'e10adc3949ba59abbe56e057f20f883e';                 //提现密钥
     }
 
@@ -136,99 +136,25 @@ class Shineupay
 
 
     /****创建代付订单****/
-    public function df_create()
+    public function create_daifu($orderId, $amount100, $currency = "INR", $phone, $bank_user_name, $bank_cardno, $bank_branch_name, $bank_email)
     {
-//接受提现ID
-        $tx_id = $_GET['tx_id']; //接受提现ID
-        $tx_key = $_GET['tx_key']; //请求密钥
-        $my_key = md5($tx_id . '48lQBCAp'); //加密算法
-
-//判断是否为空
-        if ($tx_id == '' || $tx_key == '') {
-            $code = array('code' => '0', 'msg' => '参数错误');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-
-//判断密钥是否正确
-        if ($tx_key != $my_key) {
-            $code = array('code' => '0', 'msg' => '密钥错误');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-//链接MYSQL
-        $conn = database::Get_Mysql();
-
-//向指定表插入数据 #1是提现的id
-        $sql = "insert into id_user_bank_card_withdrawal_id set id=$tx_id";
-        $stmt = $conn->prepare($sql); //预处理SQL
-        $stmt->execute(); //执行
-
-//判断是否添加失败
-        if ($stmt->affected_rows == 0) {
-            $code = array('code' => '0', 'msg' => '提现订单已经提交，请勿重复提交');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-
-//获取订单信息
-        $sql = "SELECT id,received_money,a16,a22,a21,a20,audit_status,paid_status,order_id,bank_branch_name FROM `id_user_bank_card_withdrawal` where id=$tx_id";
-        $stmt = $conn->prepare($sql); //预处理SQL
-        $stmt->execute(); //执行
-        $result = $stmt->get_result(); //获取结果资源
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_array(MYSQLI_ASSOC);
-            $down_sn = $row['order_id']; //商户订单号
-            $amount = $row['received_money']; //代付金额
-            $bank_account = $row['a16'];      //收款人准确姓名
-            $bank_cardno = $row['a22']; //银行卡号/upi收款账户
-            $idno = $row['a21']; //收款人准确电子邮箱
-            $mobile = $row['a20']; //电话号码 收款人准确 电话号码(去除+91， 纯数字电话号码)
-            $audit_status = $row['audit_status']; //审核状态:0待审核 1审核通过 2审核失败
-            $paid_status = $row['paid_status']; //代付状态：0未提交 3已提交 1支付成功 2支付失败
-            $bank_branch_name = $row['bank_branch_name']; //ifsccoded
-        } else {
-            $code = array('code' => '0', 'msg' => '订单不存在');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-//拦截未审核状态的订单
-        if ($audit_status == 2) {
-            $code = array('code' => '0', 'msg' => '订单未通过审核');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-//拦截代付状态  成功的订单
-        if ($paid_status == 1) {
-            $code = array('code' => '0', 'msg' => '订单已支付');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-//处理电话号码
-        $mobile = str_replace("+91", "", $mobile);
 //组装数据
         $params['version'] = "1.0.0"; //默认传1.0.0
         $params['advPasswordMd5'] = $this->tixian; //string	是	交易密码的md5值（32位小写），详看交易密码说明
-        $params['orderId'] = $down_sn; //string	是	商户订单编号，请确保唯一，最多允许200个字符
-        $params['amount'] = $amount / 100; //float	是	提现金额
+        $params['orderId'] = $orderId; //string	是	商户订单编号，请确保唯一，最多允许200个字符
+        $params['amount'] = $amount100 / 100; //float	是	提现金额
         $params['details'] = "details"; //string		提现说明
         $params['notifyUrl'] = $this->df_notify_url; //string		异步通知地址
-        $params['receiveCurrency'] = "INR"; //string		收款人收款货币 印度传INR 巴西传BRL
-        $params['settlementCurrency'] = "INR";       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
+        $params['receiveCurrency'] = $currency; //string		收款人收款货币 印度传INR 巴西传BRL
+        $params['settlementCurrency'] = $currency;       //string		订单结算币种 INR,BRL,IUSDT,BUSDT
         $params['prodName'] = "ind.bankcard.payout"; //string		代付类型编码
 
 //银行卡信息
-        $bankCardInfo["userName"] = $bank_account; //string	是	银行卡的持卡人
+        $bankCardInfo["userName"] = $bank_user_name; //string	是	银行卡的持卡人
         $bankCardInfo['bankCardNumber'] = $bank_cardno; //string	是	银行卡的卡号
         $bankCardInfo['IFSC'] = $bank_branch_name; //String 	是	银行卡持卡人IFSC码
-        $bankCardInfo['phone'] = $mobile; //string	是	银行卡的预留手机号
-        $bankCardInfo['email'] = $idno; //String	是	用户邮箱
+        $bankCardInfo['phone'] = $phone; //string	是	银行卡的预留手机号
+        $bankCardInfo['email'] = $bank_email; //String	是	用户邮箱
         $bankCardInfo['province'] = ""; //String	否	银行所在省名称
         $bankCardInfo['city'] = "";     //String	否	银行所在城市名称
         $bankCardInfo['address'] = ""; //String	否	所在地区名称
@@ -237,53 +163,25 @@ class Shineupay
         $key = $this->secret_key; //商户密钥
         $url = "https://testgateway.shineupay.com/v2/Withdraw/Create"; //网关地址
         $getMillisecond = $this->getMillisecond(); //毫秒时间戳
-//组装数据
         $data['body'] = $params;
         $data['merchantId'] = $this->merchantId;
         $data['timestamp'] = "$getMillisecond";
-//报文签名
         $sign = $this->sign($key, $data);
-//封装请求头
         $headers = array("Content-type: application/json;charset=UTF-8", "Accept: application/json", "Cache-Control: no-cache", "Pragma: no-cache", "Api-Sign:$sign");
-//发起post请求
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
 
-//返回值
-// 参数名	      类型	 说明
-// merchant	     string	商户号
-// orderId	     string	商户订单号
-// platOrderId	 string	平台订单号
-// amount	     string	金额
-// msg	         string	处理消息
-// status	     string	交易状态，值见数据字典
-// sign	         string	签名
-
-//判断是否成功
         if ($res['status'] == 0) {
-//成功创建 更改订单代付状态 为已提交=3
-            $sql = "UPDATE `id_user_bank_card_withdrawal` SET `paid_status` = '3' WHERE `id_user_bank_card_withdrawal`.`id` =$tx_id";
-            $stmt = $conn->prepare($sql); //预处理SQL
-            $stmt->execute(); //执行
-//返回字符串
-            $code = array('code' => '200', 'amount' => "", 'settle_sn' => $res['body']['platformOrderId'], 'down_sn' => '', 'msg' => '提交成功');
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
+            return array('status' => true, 'msg' => $res['msg']);
         } else {
-//删除刚刚提交的值
-            $sql = "delete from id_user_bank_card_withdrawal_id where id=$tx_id";
-            $stmt = $conn->prepare($sql); //预处理SQL
-            $stmt->execute(); //执行
-//返回失败值
-            $code = array('code' => '0', 'msg' => $res['msg']);
-            echo json_encode($code, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            exit;
+            return array('status' => true, 'msg' => $res['msg']);
         }
     }
 
 
     /****查询代付订单****/
-    public function df_query()
+    public
+    function df_query()
     {
 //接受参数
         $order = $_GET['order']; //商户订单号
@@ -351,7 +249,8 @@ class Shineupay
 
 
     /****回调代付订单****/
-    public function df_notify()
+    public
+    function df_notify()
     {
         $contents = file_get_contents('php://input');
         $secret_key = $this->secret_key; //商户密钥
@@ -377,7 +276,8 @@ class Shineupay
 
 
 //获取毫秒数
-    public function getMillisecond()
+    public
+    function getMillisecond()
     {
         list($microsecond, $time) = explode(' ', microtime()); //' '中间是一个空格
         return (float)sprintf('%.0f', (floatval($microsecond) + floatval($time)) * 1000);
@@ -385,7 +285,8 @@ class Shineupay
 
 
 //签名
-    public function sign($key, $params)
+    public
+    function sign($key, $params)
     {
         $params = array_filter($params);
         $str = json_encode($params) . "|" . $key;
@@ -395,7 +296,8 @@ class Shineupay
 
 
 //asc排序
-    public function asc_sort($params = array())
+    public
+    function asc_sort($params = array())
     {
         if (!empty($params)) {
             $p = ksort($params);
@@ -412,7 +314,8 @@ class Shineupay
     }
 
 //post请求方式
-    public function curlPost($url, $data, $timeout, $headers, $getMillisecond)
+    public
+    function curlPost($url, $data, $timeout, $headers, $getMillisecond)
     {
         $data = json_encode($data);
         $curl = curl_init();

@@ -74,5 +74,26 @@ class Index extends \think\Controller
         echo 'success';
     }
 
+    public function create_daifu()
+    {
+        $pay = new Shineupay();
+        $ret = $pay->create_daifu("dingdanhao" . time(), "INR", 100, 12, "beizhushuoming");
+        if ($ret["status"] == true) {
+            //流水号
+            $liu_shui_hao = $ret["trans_sn"];
+            //支付地址
+//            $pay_url = $ret["pay_url"];
+//            echo $pay_url;
+        } else {
+//            echo $ret["msg"];
+        }
+    }
+
+    public function daifu_huitiao()
+    {
+//        echo "这是个跳转页面";
+        echo 'success';
+    }
+
 
 }
