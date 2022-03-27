@@ -170,7 +170,7 @@ class Shineupay
         $headers = array("Content-type: application/json;charset=UTF-8", "Accept: application/json", "Cache-Control: no-cache", "Pragma: no-cache", "Api-Sign:$sign");
         $json = $this->curlPost($url, $data, 5, $headers, $getMillisecond);
         $res = json_decode($json, true);
-
+        echo $json;
         if ($res['status'] == 0) {
             return array('status' => true, 'msg' => $res['msg']);
         } else {
