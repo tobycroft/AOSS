@@ -6,7 +6,6 @@ use app\index\model\ProjectModel;
 use SendFile\SendFile;
 use think\Request;
 use app\index\model\AttachmentModel;
-use app\index\model\ProjectModel;
 
 class Index extends \think\Controller
 {
