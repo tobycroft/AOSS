@@ -2,10 +2,11 @@
 
 namespace app\index\controller;
 
+use app\index\model\ProjectModel;
 use SendFile\SendFile;
 use think\Request;
 use app\index\model\AttachmentModel;
-use app\index\model\LogModel;
+use app\index\model\ProjectModel;
 
 class Index extends \think\Controller
 {
@@ -29,7 +30,7 @@ class Index extends \think\Controller
     public function upload_file(Request $request, $full = 0, $ue = 0)
     {
         $token = $this->token;
-        $proc = LogModel::api_find_token($token);
+        $proc = ProjectModel::api_find_token($token);
         if (!$proc) {
             $this->fail('项目不可用');
         }
@@ -145,7 +146,7 @@ class Index extends \think\Controller
         $file_name = md5(time() . microtime());
 
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $image, $result)) {
-            $proc = LogModel::api_find_token($token);
+            $proc = ProjectModel::api_find_token($token);
             if (!$proc) {
                 $this->fail('项目不可用');
             }
